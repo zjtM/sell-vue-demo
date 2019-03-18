@@ -6,7 +6,7 @@
       <router-link :to="nav.path">{{nav.name}}</router-link>
     </div>
   </div>
-    <router-view></router-view>
+    <router-view :seller="seller"></router-view>
 </div>
 </template>
 
@@ -40,7 +40,7 @@ export default {
 			// response = response.Body()
 			if (response.errno === ERR_OK) {
 				this.seller = response.data;
-				console.log(this.seller)
+				// console.log(this.seller)
 			}
 		})
 	},

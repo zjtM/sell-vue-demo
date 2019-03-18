@@ -34,7 +34,7 @@
 				</li>
 			</ul>
 		</div>
-		<shop-cart/>
+		<shop-cart :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shop-cart>
 	</div>
 </template>
 
@@ -46,9 +46,9 @@
     components: {
 			shopCart
 		},
-    props:{
-			seller:Object
-		},
+    props:[
+			"seller"
+		],
     data () {
       return {
 				goods:[],
@@ -69,6 +69,7 @@
 			}
 		},
 		created() {
+			console.log(this.seller)
 			this.$fetch('/api/goods').then((res)=>{
 				this.goods = res.data
 				this.$nextTick(()=>{
