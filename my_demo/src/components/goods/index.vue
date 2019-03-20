@@ -28,6 +28,9 @@
 									<span class="now">￥{{food.price}}</span>
 									<span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
 								</div>
+								<div class="cartcontrol-wrapper">
+									<cartcontrol :food="food"></cartcontrol>
+								</div>
 							</div>
 						</li>
 					</ul>
@@ -41,10 +44,12 @@
 <script>
 	import BScroll from 'better-scroll'
 	import shopCart from '@/components/shopcart'
+	import cartcontrol from '@/components/cartcontrol'
 
   export default {
     components: {
-			shopCart
+			shopCart,
+			cartcontrol
 		},
     props:[
 			"seller"
@@ -69,7 +74,6 @@
 			}
 		},
 		created() {
-			console.log(this.seller)
 			this.$fetch('/api/goods').then((res)=>{
 				this.goods = res.data
 				this.$nextTick(()=>{
@@ -99,6 +103,7 @@
 				});
 
 				this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+					click:true,
 					probeType:3
 				});
 
@@ -225,6 +230,9 @@
 						text-decoration line-through
 						font-size 10px
 						color rgb(147, 153, 159)
-
+				.cartcontrol-wrapper	
+					position absolute
+					right 0
+					bottom 12px
 
 </style>
