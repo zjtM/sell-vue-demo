@@ -36,11 +36,8 @@ export default {
 	},
 	created() {
 		this.$fetch('/api/seller').then(response=>{
-			// this.seller = response.data
-			// response = response.Body()
 			if (response.errno === ERR_OK) {
 				this.seller = response.data;
-				// console.log(this.seller)
 			}
 		})
 	},

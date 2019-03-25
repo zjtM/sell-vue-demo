@@ -1,6 +1,11 @@
 <template>
 	<div class="cartcontrol">
-		<div class="cart-decrease icon-remove_circle_outline" v-show="food.count>0" @click="decreaseCart" ></div>
+		<transition name="move">
+			<div class="cart-decrease"  v-show="food.count>0" @click="decreaseCart" >
+				<span class="inner icon-remove_circle_outline"></span>
+			</div>
+		</transition>
+
 		<div class="cart-count" v-show="food.count>0">{{food.count}}</div>
 		<div class="cart-add icon-add_circle" @click="addCart"></div>
 	</div>
@@ -21,11 +26,9 @@
 		methods: {
 			// 增加数量
 			addCart(event){
-				console.log(1)
 				if (!event._constructed) {  // 解决pc点击会触发两次点击事件
 					return
 				}
-				console.log(this.food)
 				if(!this.food.count){
 					// this.food.count = 1 // 直接设置count数量不会生效  
 					Vue.set(this.food, "count", 1)   // 需要通过vue.set()方法挂上count属性并设置值
@@ -50,12 +53,20 @@
 <style lang="stylus" scoped>
 .cartcontrol
 	font-size 0
-	.cart-decrease, .cart-add
+	.cart-decrease
 		display inline-block
-		line-height 24px
-		font-size 24px
 		padding 6px
-		color rgb(0,160,220)
+		transition all 0.4s linear 
+		.inner
+			display inline-block
+			line-height 24px
+			font-size 24px
+			color rgb(0,160,220)
+			transition all 0.4s linear 
+			transform rotate(0)
+		&.move-enter, &.move-leave-to
+			opacity 0
+			transform translate3d(24px, 0,0)
 	.cart-count
 		display inline-block
 		vertical-align top
@@ -67,4 +78,8 @@
 		color rgb(147,153,159)
 	.cart-add
 		display inline-block
+		line-height 24px
+		font-size 24px
+		padding 6px
+		color rgb(0,160,220)
 </style>

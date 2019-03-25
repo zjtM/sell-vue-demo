@@ -37,7 +37,7 @@
 				</li>
 			</ul>
 		</div>
-		<shop-cart :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shop-cart>
+		<shop-cart :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shop-cart>
 	</div>
 </template>
 
@@ -54,6 +54,9 @@
     props:[
 			"seller"
 		],
+		// props:{
+		// 	seller:Object
+		// },
     data () {
       return {
 				goods:[],
@@ -71,6 +74,17 @@
 					}
 				}
 				return 0;
+			},
+			selectFoods(){
+				let foods = [];
+				this.goods.forEach((good) => {
+					good.foods.forEach((food) =>{
+						if(food.count){
+							foods.push(food);
+						}
+					});
+				});
+				return foods;
 			}
 		},
 		created() {
