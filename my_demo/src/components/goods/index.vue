@@ -29,7 +29,7 @@
 									<span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
 								</div>
 								<div class="cartcontrol-wrapper">
-									<cartcontrol :food="food"></cartcontrol>
+									<cartcontrol :food="food" @cartadd="cartAdd"></cartcontrol>
 								</div>
 							</div>
 						</li>
@@ -37,7 +37,7 @@
 				</li>
 			</ul>
 		</div>
-		<shop-cart :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shop-cart>
+		<shop-cart ref="shopcart" :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shop-cart>
 	</div>
 </template>
 
@@ -135,8 +135,13 @@
 					this.listHeight.push(height);
 				}
 			},
-		},
-
+			// 小球下落
+			cartAdd(el){
+				this.$nextTick(()=>{
+					this.$refs.shopcart.drop(el); //调用shopCart的drop()函数					
+				})
+			}
+		}
   }
 
 </script>

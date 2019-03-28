@@ -35,6 +35,9 @@
 				}else{
 					this.food.count ++
 				}
+				// console.log(event.target)
+				let el = event.target
+				this.$emit("cartadd", el);
 			},
 			// 减少数量
 			decreaseCart(event){
