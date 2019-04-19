@@ -1,7 +1,8 @@
 <template>
   <transition name="move">
     <div v-show="showFlag" class="food" ref="food">
-      <div>   <!-- better-scroll 需要滚动的元素底下的子元素只能有 一个，不然后面的元素不会有滚动效果。-->
+      <div>
+        <!-- better-scroll 需要滚动的元素底下的子元素只能有 一个，不然后面的元素不会有滚动效果。-->
         <div class="food-content">
           <div class="img-header">
             <img :src="food.image" alt="加载失败">
@@ -36,7 +37,38 @@
         <split></split>
         <div class="rating">
           <h1 class="title">商品评价</h1>
-          <ratingselect :selectType="selectType" :onlyContent="onlyContent" :desc="desc" :ratings="food.ratings"></ratingselect>
+          <ratingselect
+            @increment="incrementTotal"
+            :selectType="selectType"
+            :onlyContent="onlyContent"
+            :desc="desc"
+            :ratings="food.ratings"
+          ></ratingselect>
+          <div class="rating-wrapper">
+            <ul v-show="food.ratings && food.ratings.length">
+              <li
+                v-show="needShow(rating.rateType,rating.text)"
+                class="rating-item border-1px"
+                v-for="(rating,i) in food.ratings"
+                :key="i"
+              >
+                <div class="user">
+                  <span class="name">{{rating.username}}</span>
+                  <img :src="rating.avatar" alt="加载失败" calss="avatar" width="12" height="12">
+                </div>
+                <div class="time">{{rating.rateTime | formatDate}}</div>
+                <p class="text">
+                  <span
+                    :class="{'icon-thumb_down' : rating.rateType === 1, 'icon-thumb_up':rating.rateType ===0}"
+                  ></span>
+                  {{rating.text}}
+                </p>
+              </li>
+            </ul>
+            <div class="no-ratings" v-show="!food.ratings || !food.ratings.length">
+							暂无评价
+						</div>
+          </div>
         </div>
       </div>
     </div>
@@ -49,10 +81,12 @@ import BScroll from "better-scroll";
 import cartcontrol from "@/components/cartcontrol";
 import split from "@/components/split";
 import ratingselect from "@/components/ratingselect";
+import {formatDate} from '@/common/js/common.js'
 
+// 评价选择的状态
 const POSITIVE = 0;
 const NEGATIVE = 1;
-const ALL =2;
+const ALL = 2;
 
 export default {
   components: {
@@ -65,22 +99,22 @@ export default {
   },
   data() {
     return {
-			showFlag: false,
-			selectType:NEGATIVE,
-			onlyContent:true,
-			desc:{
-				all:'全部',
-				positive:'推荐',
-				negative:'吐槽'
-			}
+      showFlag: false,
+      selectType: ALL, // 选择类型
+      onlyContent: true, //只有内容
+      desc: {
+        all: "全部",
+        positive: "推荐",
+        negative: "吐槽"
+      }
     };
   },
 
   methods: {
     show() {
-			this.showFlag = true;
-			this.selectType = ALL;
-			this.onlyContent = true
+      this.showFlag = true;
+      this.selectType = ALL;
+      this.onlyContent = true;
       this.$nextTick(() => {
         if (!this.scroll) {
           this.scroll = new BScroll(this.$refs.food, {
@@ -102,11 +136,40 @@ export default {
       let el = event.target;
       this.$emit("cartadd", el);
       Vue.set(this.food, "count", 1);
+    },
+    incrementTotal(type,data) {
+			this[type] = data
+			// 异步加载
+      this.$nextTick(() => {
+        if (!this.scroll) {
+         
+          this.scroll.refresh();
+        }
+      });
+    },
+    needShow(type, text) {
+      if (this.onlyContent && !text) {
+        return false;
+      }
+      if (this.selectType === ALL) {
+        return true;
+      } else {
+        return type === this.selectType;
+      }
     }
-  }
+	},
+	filters:{
+		// 时间戳转换
+		formatDate(time){
+			let date = new Date(time);
+			return formatDate(date,'yyyy-MM-dd hh:mm')
+		}
+	}
 };
 </script>
 <style lang="stylus" scoped>
+@import '../../common/stylus/mixin';
+
 .food {
   position: fixed;
   top: 0;
@@ -240,14 +303,78 @@ export default {
       color: rgb(77, 85, 93);
     }
   }
-	.rating {
-		padding-top 18px
-		.title{
-			line-height: 14px;
-			margin-left: 18px;
-			font-size: 14px;
-			color: rgb(7, 17, 27);				
-		}
-	}
+
+  .rating {
+    padding-top: 18px;
+
+    .title {
+      line-height: 14px;
+      margin-left: 18px;
+      font-size: 14px;
+      color: rgb(7, 17, 27);
+    }
+
+    .rating-wrapper {
+      padding: 0 18px;
+
+      .rating-item {
+        position: relative;
+        padding: 16px 0;
+        border-1px(rgba(7, 17, 27, 0.1));
+
+        .user {
+          position: absolute;
+          right: 0;
+          top: 16px;
+          line-height: 12px;
+          font-size: 0;
+
+          .name {
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 6px;
+            font-size: 10px;
+            color: rgb(147, 153, 159);
+          }
+
+          .avatar {
+            border-radius: 50%;
+          }
+        }
+
+        .time {
+          margin-bottom: 6px;
+          line-height: 12px;
+          font-size: 10px;
+          color: rgb(147, 153, 159);
+        }
+
+        .text {
+          line-height: 16px;
+          font-size: 12px;
+          color: rgb(7, 17, 27);
+
+          .icon-thumb_up, .icon-thumb_down {
+            margin-right: 4px;
+            line-height: 16px;
+            font-size: 12px;
+          }
+
+          .icon-thumb_up {
+            color: rgb(0, 160, 220);
+          }
+
+          .icon-thumb_down {
+            color: rgb(147, 153, 159);
+          }
+        }
+      }
+			.no-ratings{
+				padding 16px 0
+				font-size 12px
+				color rgb(147,153,156)
+			}
+    }
+  }
 }
 </style>
