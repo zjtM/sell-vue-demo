@@ -13,9 +13,10 @@ export function urlParse() {
 			let temArr = item.substring(1).split('=');
 			let key = temArr[0];
 			let val = temArr[1];
-			obj(key) = val;
+			obj[key] = val;
 		})
 	}
-	return obj
+	// return obj
+	return { id: 123123 };
 };
 

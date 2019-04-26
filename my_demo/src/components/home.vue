@@ -6,12 +6,17 @@
       <router-link :to="nav.path">{{nav.name}}</router-link>
     </div>
   </div>
-    <router-view :seller="seller"></router-view>
+	<keep-alive>  //解决切换界面闪现 原因:界面被重新渲染，生命周期被重新执行
+		<router-view :seller="seller"></router-view>
+	</keep-alive>
+    
 </div>
 </template>
 
 <script>
 import header from '@/components/header'
+import {urlParse} from '../common/js/util.js'
+
 
 const  ERR_OK = 0;
 
@@ -31,13 +36,23 @@ export default {
         path:"/seller",
         name:"商家",
 			},],
-			seller:{}
+			seller:{
+				id:(()=>{
+					let queryParam = urlParse();
+					console.log(queryParam);
+					return queryParam.id;
+				})()
+			}
     }
 	},
 	created() {
 		this.$fetch('/api/seller').then(response=>{
+			// console.log(this.seller)
 			if (response.errno === ERR_OK) {
-				this.seller = response.data;
+				// this.seller = response.data;
+				// console.log(this.seller)
+				this.seller = Object.assign({},this.seller,response.data); //扩展对象，添加属性ID
+				// console.log(this.seller)
 			}
 		})
 	},

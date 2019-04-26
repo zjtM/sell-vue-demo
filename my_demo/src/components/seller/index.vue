@@ -72,6 +72,8 @@
 import star from "@/components/star";
 import split from "@/components/split";
 import BScroll from "better-scroll";
+import {saveToLocal, loadFromlLocal} from '@/common/js/store.js'
+
 
 export default {
   name: "Seller",
@@ -92,7 +94,7 @@ export default {
   created() {
     this.classMap = ["decrease", "discount", "special", "invoice", "guarantee"];
 		this._initScorll();
-		this._initPics()
+		this._initPics();
 	},
 	computed: {
 		favoriteText(){
